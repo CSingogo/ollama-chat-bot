@@ -1,16 +1,19 @@
 from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
 from models import User
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field,  Session
 from dataclasses import dataclass
 from database import SessionLocal
 from models import User
 from contextlib import contextmanager
+from typing import Annotated
+from fastapi import Depends
+from fastapi import APIRouter
 
 load_dotenv() 
 
 
-
+router = APIRouter(prefix="/agent", tags=["agent"])
 @contextmanager
 def get_session():
     session = SessionLocal()
@@ -65,17 +68,6 @@ async def add_user_name(ctx: RunContext[SupportDependencies])-> str:
     return f"The user's name is {user_name!r}"
 
 
-# @my_agent.tool
-# async def account_status(ctx: RunContext[SupportDependencies])-> str:
-#     status = await ctx.deps.db.account_status(id=ctx.deps.user_id)
-#     return f"Your account is currently: {status}"
-
-
-# @my_agent.tool
-# async def subscription_plan(ctx: RunContext[SupportDependencies])-> str:
-#     plan = await ctx.deps.db.subscription_plan(id=ctx.deps.user_id)
-#     return f"Your current subscription plan is: {plan}"
-
 @my_agent.tool
 async def get_account_status(ctx: RunContext[SupportDependencies]) -> str:
     """Get the current user's account status."""
@@ -87,4 +79,14 @@ async def get_subscription_plan(ctx: RunContext[SupportDependencies]) -> str:
     """Get the current user's subscription plan."""
     plan = await ctx.deps.db.subscription_plan(id=ctx.deps.user_id)
     return f"Subscription plan: {plan}"
+
+AgentDep = Annotated[Agent, Depends(my_agent)]
+SessionDep = Annotated[Session, Depends(get_session)]
+# result = my_agent.run_sync("i have been hacked", deps=SupportDependencies(user_id=2, db=DatabaseConn()))
+# print(result.output)
+@router.get("/")
+def ask()-> dict:
+    result = my_agent.run_sync("i have been hacked", deps=SupportDependencies(user_id=2, db=DatabaseConn()))
+    print(result.output)
+    return {"data": f'{result.output}'}
 
