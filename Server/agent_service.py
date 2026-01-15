@@ -1,4 +1,4 @@
-from agent import DatabaseConn , SupportDependencies, my_agent
+from Server.core.agent import DatabaseConn , SupportDependencies, my_agent
 import asyncio
 async def function():
     deps = SupportDependencies(user_id=2, db=DatabaseConn())

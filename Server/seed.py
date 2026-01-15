@@ -1,19 +1,19 @@
 from database import SessionLocal, create_db_and_tables
 from sqlmodel import Field, Session, select,SQLModel,create_engine
+from core.logging import  logger
 
 
-
-from models import User
+from Server.models.user_model import User
 
 def seed_database(session: Session) -> None: 
     if not session.exec(select(User)).first(): 
-        print("🌱 Seeding database with mock users...")
+        logger("🌱 Seeding database with mock users...")
         for u in mock_users:
             session.add(u)
 
         session.commit()
     else:
-        print("Database already has data. Skipping seed.")
+        logger("Database already has data. Skipping seed.")
 
 
 mock_users = [
@@ -21,27 +21,39 @@ mock_users = [
         name="Alice Smith",
         account_status="Active",
         subscription_plan="Pro Plan",
-        is_active=True
+        is_active=True,
+        password="123",
+        username="alice_s"
     ),
     User(
         name="Bob Jones",
         account_status="Locked",
         subscription_plan="Free Plan",
-        is_active=True
+        is_active=True,
+        password="123",
+        username="bob_j"
+      
     ),
     User(
         name="Charlie Brown",
         account_status="Active",
         subscription_plan="Enterprise Plan",
-        is_active=False
+        is_active=True,
+        password="123",
+        username="charlie_b"
+      
     ),
     User(
         name="Diana Prince",
         account_status="active",
         subscription_plan="Free Plan",
-        is_active=True
+        is_active=True,
+        password="123",
+        username="diana_p"
+      
     )
 ]
+
 
 
 

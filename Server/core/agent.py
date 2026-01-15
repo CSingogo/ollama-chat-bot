@@ -1,14 +1,16 @@
 from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
-from models import User
+from models.user_model import User
 from sqlmodel import SQLModel, Field,  Session
 from dataclasses import dataclass
 from database import SessionLocal
-from models import User
+from models.user_model import User
 from contextlib import contextmanager
 from typing import Annotated
 from fastapi import Depends
 from fastapi import APIRouter
+from datetime import date
+
 
 load_dotenv() 
 
@@ -52,7 +54,7 @@ class SupportResult(SQLModel):
     risk_level: int = Field(description="Risk level of the query", ge=0, le=10)
 
 
-my_agent = Agent('groq:llama-3.3-70b-versatile',
+my_agent = Agent('groq:llama-3.1-8b-instant',
               deps_type=SupportDependencies,
              #implement result type
              output_type=SupportResult,
@@ -80,11 +82,17 @@ async def get_subscription_plan(ctx: RunContext[SupportDependencies]) -> str:
     plan = await ctx.deps.db.subscription_plan(id=ctx.deps.user_id)
     return f"Subscription plan: {plan}"
 
+@my_agent.tool_plain
+def get_current_date() -> str:
+    """Get the current date. Use this whenever the user asks for the date."""
+    return str(date.today())
+
 AgentDep = Annotated[Agent, Depends(my_agent)]
 SessionDep = Annotated[Session, Depends(get_session)]
-# result = my_agent.run_sync("i have been hacked", deps=SupportDependencies(user_id=2, db=DatabaseConn()))
-# print(result.output)
-@router.get("/")
+
+
+
+@router.post("/")
 def ask()-> dict:
     result = my_agent.run_sync("i have been hacked", deps=SupportDependencies(user_id=2, db=DatabaseConn()))
     print(result.output)

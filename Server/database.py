@@ -1,7 +1,12 @@
-from typing import Annotated
-from sqlmodel import  create_engine, Session, SQLModel
+from typing import Annotated, Generator
+from sqlmodel import  (
+    create_engine, 
+    Session,
+    SQLModel
+)
+from fastapi import Depends
 from sqlalchemy.orm import sessionmaker
-from models import User
+from models.user_model import User
 
 DATABASE_URL = "sqlite:///database.db"
 
@@ -28,6 +33,15 @@ SessionLocal = sessionmaker(
     bind=engine, 
     class_=Session  # This tells it to use SQLModel's Session wrapper
 )
+
+def get_session() -> Generator[Session, None, None]:
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+SessionDep = Annotated[Session, Depends(get_session)]
+
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
