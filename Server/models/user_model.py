@@ -24,3 +24,10 @@ class UserLogin(UserBase):
 
 class UserRead(UserBase):
     id: int 
+
+class UserObject(UserBase):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    username: str
+    account_status: str = Field(default="Active")
+    subscription_plan: str = Field(default="Free Plan")

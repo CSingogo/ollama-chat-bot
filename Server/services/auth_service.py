@@ -27,8 +27,9 @@ def login(user_login_dto: UserLogin, session: Session) -> str:
         )
 
 
-    access_token = create_access_token(data={ "sub": str(user.id),"email": user.email,
+    access_token = create_access_token(data={ "sub": str(user.id),
                                              "username":user.username,
+                                             "is_active": user.is_active,
                                              "account_status": user.account_status,
                                              "subscription_plan": user.subscription_plan })
 
