@@ -6,20 +6,11 @@ from sqlmodel import  (
 )
 from fastapi import Depends
 from sqlalchemy.orm import sessionmaker
-from models.user_model import User
+from config.settings import settings
 
-DATABASE_URL = "sqlite:///database.db"
 
-# engine = create_engine(DATABASE_URL, echo=True)
+DATABASE_URL = settings.database_url
 
-# def create_db_and_tables():  
-#     SQLModel.metadata.create_all(engine)
-
-# def get_session():
-#     with Session(engine) as session:
-#         yield session
-
-# SessionDep = Annotated[Session, Depends(get_session)]
 
 engine = create_engine(
     DATABASE_URL, 

@@ -1,4 +1,4 @@
-from database import SessionLocal, create_db_and_tables
+from Server.config.database import SessionLocal, create_db_and_tables
 from sqlmodel import Field, Session, select,SQLModel,create_engine
 from core.logging import  logger
 

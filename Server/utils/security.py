@@ -1,13 +1,20 @@
 from passlib.context import CryptContext
 from typing import Annotated
-from fastapi import Depends
 from datetime import datetime, timedelta
-from jose import jwt
+from fastapi import  HTTPException, status, Header
+from typing_extensions import Annotated
+from jose import jwt, JWTError
+from datetime import datetime
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends
+
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"
 )
+
+security = HTTPBearer()
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -27,3 +34,32 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+async def verify_token(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials  # Bearer <token>
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        exp = payload.get("exp")
+        if exp is None or datetime.utcfromtimestamp(exp) < datetime.utcnow():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token expired",
+            )
+
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token payload",
+            )
+
+        return payload
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
