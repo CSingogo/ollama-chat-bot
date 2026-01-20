@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from pydantic import Field
 from sqlmodel import SQLModel
 from models.user_model import UserObject
-from Server.config.database import get_session
 import redis
 
  
@@ -10,7 +9,7 @@ import redis
 @dataclass
 class SupportDependencies:
     user: UserObject
-    redis: redis.Redis
+    # redis: redis.Redis
     
 
 class SupportResult(SQLModel):

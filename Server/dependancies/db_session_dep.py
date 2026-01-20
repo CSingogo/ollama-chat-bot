@@ -6,7 +6,7 @@ from config.database import SessionLocal
 
 
 @contextmanager
-def get_session() -> Session:
+def get_session() -> Session: # type: ignore
     session = SessionLocal()
     try:
         yield session

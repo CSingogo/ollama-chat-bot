@@ -1,7 +1,7 @@
 from utils.security import verify_token
 from services.user_service import get_users_service
 from models.user_model import UserObject
-from Server.config.database import SessionDep
+from config.database import SessionDep
 from fastapi import APIRouter, status, Depends
 
 

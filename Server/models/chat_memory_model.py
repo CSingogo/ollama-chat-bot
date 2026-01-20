@@ -1,5 +1,6 @@
 import json
 from typing import List, Dict
+import redis
 
 class ChatMemory:
     def __init__(self, redis_client):
@@ -24,3 +25,13 @@ class ChatMemory:
     def clear_history(self, user_id: int):
         self.r.delete(f"chat:{user_id}")
 
+
+
+
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+test = ChatMemory(r)
+print("===== adding message ====")
+test.add_message(1, "user","my name is john" )
+test.add_message(1, "user","my name is john doe!!" )
+print("====== now the history =======")
+print(test.get_history(1))

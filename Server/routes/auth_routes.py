@@ -1,6 +1,6 @@
 
 from services.auth_service import login, register_user
-from Server.config.database import SessionDep
+from config.database import SessionDep
 from models.user_model import UserLogin, UserRead, UserRegister
 from fastapi import APIRouter, status
 

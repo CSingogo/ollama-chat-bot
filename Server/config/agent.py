@@ -1,9 +1,8 @@
 import redis
 from models.agent_model import SupportDependencies, SupportResult
 from config.settings import settings
-from dependancies import RedisDep
 from utils.security import verify_token
-from Server.models.chat_memory_model import ChatMemory
+from models.chat_memory_model import ChatMemory
 from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
 from models.user_model import User
@@ -13,7 +12,7 @@ from sqlmodel import(
     Session
 )
 from dataclasses import dataclass
-from Server.config.database import SessionLocal
+from config.database import SessionLocal
 from models.user_model import User
 from contextlib import contextmanager
 from typing import Annotated
@@ -41,7 +40,7 @@ my_agent = Agent('groq:llama-3.3-70b-versatile',
 
 @my_agent.system_prompt
 def add_user_name(ctx: RunContext[SupportDependencies]) -> str:
-    return  f"User ID: {ctx.deps.user_id}"
+    return  f"User ID: {ctx.deps.user.id}"
     
 
 

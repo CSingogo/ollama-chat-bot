@@ -13,11 +13,11 @@ from contextlib import asynccontextmanager
 from models.chat_memory_model import ChatMemory
 from config.settings import settings
 from utils.security import verify_token
-from Server.config.agent import router as agent_router
+from routes.agent_routes import router as agent_router
 from routes.auth_routes import router as auth_router
 from routes.user_routes import router as user_router
 from contextlib import contextmanager
-from Server.config.database import SessionLocal, create_db_and_tables
+from config.database import SessionLocal, create_db_and_tables
 from core.logging import LOGGING_CONFIG, logger
 import redis
 from dotenv import load_dotenv
@@ -28,7 +28,7 @@ import os
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
-
+loaded = False
 
 @contextmanager
 def get_session():
@@ -42,7 +42,9 @@ def get_session():
 def on_startup()-> None:
     logger.info("🚀 FastAPI application started")
     create_db_and_tables()
-    load_dotenv() 
+    load_dotenv()
+       
+
 
 def redis_init(app: FastAPI) -> None:
     r = redis.Redis(host='localhost', port=6379, decode_responses=True)
