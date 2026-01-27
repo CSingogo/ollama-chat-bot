@@ -1,6 +1,7 @@
 from models.user_model import (
       User,
       UserLogin,
+      UserObject,
       UserRegister
 )
 
@@ -9,7 +10,7 @@ from utils.security import (
       verify_password,
       create_access_token
 )
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 from sqlmodel import  select,  Session
 
 
@@ -27,13 +28,13 @@ def login(user_login_dto: UserLogin, session: Session) -> str:
         )
 
 
-    access_token = create_access_token(data={ "sub": str(user.id),
+    access_token = create_access_token(    data={ "sub": str(user.id),
                                              "username":user.username,
                                              "is_active": user.is_active,
                                              "account_status": user.account_status,
-                                             "subscription_plan": user.subscription_plan })
+                                             "subscription_plan": user.subscription_plan,
+                                              "isFirstPrompt": True })
 
- 
     return access_token
 
 def get_user_by_username(session: Session, username: str) -> bool:

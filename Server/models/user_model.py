@@ -27,7 +27,9 @@ class UserRead(UserBase):
 
 class UserObject(UserBase):
     id: int | None = Field(default=None, primary_key=True)
-    name: str
-    username: str
+    name: str | None
+    username: str | None
     account_status: str = Field(default="Active")
     subscription_plan: str = Field(default="Free Plan")
+    prompt: str | None
+    isFirstprompt: bool = Field(default=True)

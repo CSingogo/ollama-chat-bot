@@ -2,7 +2,7 @@
 from services.auth_service import login, register_user
 from config.database import SessionDep
 from models.user_model import UserLogin, UserRead, UserRegister
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Request
 
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
