@@ -8,7 +8,7 @@ from fastapi import Depends
 from fastapi.requests import HTTPConnection
 
 
-provider = GoogleProvider(api_key='AIzaSyDQ6C5GEHwfgoZGBKhuamuajwHJhmINx2Y')
+provider = GoogleProvider(api_key=settings.google_api_key)
 model = GoogleModel('gemini-2.5-flash', provider=provider)
 
 
