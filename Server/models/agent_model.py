@@ -11,5 +11,4 @@ class SupportDependencies:
     
 
 class SupportResult(SQLModel):
-    support_advice: str = Field(description="Advice returned to the user")
-    first_run: bool = Field(default=True)
+    advice: str = Field(description="Advice returned to the user")

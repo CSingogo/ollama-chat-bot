@@ -1,16 +1,18 @@
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect, status
 from pydantic_ai import Agent
 from pydantic_ai.messages import ModelMessage
 
 async def chat_ws(ws: WebSocket, agent: Agent):
     await ws.accept()
-    
+    await ws.send_text('How Can I Help You Today!')
     # Initialize message history for this WebSocket connection
     message_history: list[ModelMessage] = []
     
     try:
         while True:
             prompt = await ws.receive_text()
+            # prompt = await ws.receive_json()
+           
             await ws.send_json({"type": "thinking"})
             
             # Pass and update message history
@@ -20,8 +22,8 @@ async def chat_ws(ws: WebSocket, agent: Agent):
                 ws=ws,
                 message_history=message_history
             )
-    except WebSocketDisconnect:
-        print("Client disconnected")
+    except WebSocketDisconnect as exc:
+        print(f"Client disconnected, code={exc.code}, reason='{exc.reason}'")
     except Exception as e:
         await process_exception(e, ws)
 
@@ -35,11 +37,10 @@ async def process_prompt(
 ) -> list[ModelMessage]:
     """Process prompt and return updated message history"""
     
-    # If your agent expects dependencies, pass them here
     async with agent.run_stream(
         prompt, 
         message_history=message_history,
-        deps=None  # or your actual dependencies object
+        deps=None  
     ) as result:
         output = await result.get_output()
         
@@ -56,4 +57,4 @@ async def process_exception(e: Exception, ws: WebSocket):
         "type": "error",
         "message": str(e)
     })
-    await ws.close()
+    await ws.close(code=status.WS_1008_POLICY_VIOLATION)
